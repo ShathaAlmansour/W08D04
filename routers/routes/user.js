@@ -1,20 +1,13 @@
 const express = require("express");
-const userRoute = express.Router();
+const userRouter = express.Router();
+const authentication = require("../authentication");
+const authorization = require("../authorization");
 
+const { resgister, getUsers, login, softDel } = require("../controllers/user");
 
-const {
-  resgister,
-  login,
-  getalluser,
-  deletuser,
-} = require("./../controllers/user");
-const authentication = require("./../middleware/authentication");
-const authorization = require("./../middleware/authorization");
+userRouter.post("/resgister", resgister);
+userRouter.get("/users", authentication, authorization, getUsers);
+userRouter.post("/login", login);
+userRouter.put("/delete/:_id", authentication, authorization, softDel);
 
-
-userRoute.post("/resgister", resgister);
-userRoute.post("/login", login);
-userRoute.get("/allusers", authentication, authorization, getalluser);
-userRoute.delete("/userdelet/:_id", authentication, authorization, deletuser);
-
-module.exports = userRoute;
+module.exports = userRouter;
