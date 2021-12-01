@@ -1,31 +1,32 @@
-const rolemodel = require("../../db/models/role");
+const roleModel = require("../../db/models/role");
 
-const newrolr = (req, res) => {
+const newRole = (req, res) => {
   const { role, permossion } = req.body;
 
-  const newrolr = new rolemodel({
+  const newRole = new roleModel({
     role,
     permossion,
   });
-  newrolr
+  newRole
     .save()
     .then((result) => {
       res.json(result);
     })
     .catch((err) => {
-      res.status(err);
+      res.send(err);
     });
 };
 
-const getrole = (req, res) => {
-  rolemodel
+
+const getRoles = (req, res) => {
+    roleModel
     .find({})
     .then((result) => {
-      res.json(result);
+      res.send(result);
     })
     .catch((err) => {
-      res.json(err);
+      res.send(err);
     });
-};
+}
 
-module.exports = { newrolr, getrole };
+module.exports = {newRole, getRoles}

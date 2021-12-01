@@ -1,46 +1,60 @@
-const usermodel = require("../../db/models/user");
+const userModel = require("../../db/models/user");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+
 const salt = Number(process.env.SALT);
-const secret = process.env.SECRET;
-const resgister = async (req, res) => {
-  const { email, password, role } = req.body;
+const secret = process.env.SECRET_KEY;
 
-  const savedEmail = email.toLowerCase();
-  const savedPassword = await bcrypt.hash(password, salt);
-
-  const newuser = new usermodel({
-    email: savedEmail,
-    password: savedPassword,
-    role,
-  });
-  newuser
-    .save()
+const getUsers = (req, res) => {
+  userModel
+    .find({})
     .then((result) => {
-      res.json(result);
+      res.send(result);
     })
     .catch((err) => {
       res.send(err);
     });
 };
 
+const resgister = async (req, res) => {
+  const { email, username, password } = req.body;
+
+  const savedEmail = email.toLowerCase();
+  const savedPassword = await bcrypt.hash(password, salt);
+  try {
+    const newUser = new userModel({
+      email: savedEmail,
+      username: username,
+      password: savedPassword,
+    });
+    console.log(newUser);
+    newUser
+      .save()
+      .then((result) => {
+        res.json(result);
+      })
+      .catch((err) => {
+        res.status(400).send(err);
+      });
+  } catch (error) {
+    res.status(400).send({ message: error });
+  }
+};
 
 const login = (req, res) => {
-  const { email, password } = req.body;
-  const savedEmail = email.toLowerCase();
-
-  usermodel
-    .findOne({ email: savedEmail })
-
+  const { data, password } = req.body;
+  console.log(data);
+  userModel
+    .findOne({ $or: [{ email: data }, { username: data }] })
     .then(async (result) => {
       if (result) {
-        if (result.email == email) {
+        if (result.email == data || result.username == data) {
           const savedPassword = await bcrypt.compare(password, result.password);
           const payload = {
+            _id: result._id,
             role: result.role,
-            id: result._id,
           };
-
+          console.log("payload", payload);
           if (savedPassword) {
             let token = jwt.sign(payload, secret);
             res.status(200).json({ result, token });
@@ -59,26 +73,43 @@ const login = (req, res) => {
     });
 };
 
-const getalluser = (req, res) => {
-  usermodel
-    .find({})
-    .then((result) => {
-      res.json(result);
-    })
-    .catch((err) => {
-      res.json(err);
-    });
-};
-const deletuser = (req, res) => {
+// Toglle soft delete
+const softDel = (req, res) => {
   const { _id } = req.params;
-  taskmodel
-    .findByIdAndDelete({ _id })
-    .then((result) => {
-      res.json(result);
-    })
-    .catch((err) => {
-      res.json(err);
+  try {
+    userModel.findById({ _id: _id }).then((item) => {
+      if (item.isDel == false) {
+        userModel
+          .findByIdAndUpdate(
+            { _id: _id },
+            { $set: { isDel: true } },
+            { new: true }
+          )
+          .then((result) => {
+            res.status(200).json(result);
+          })
+          .catch((err) => {
+            res.status(400).json(err);
+          });
+      } else {
+        userModel
+          .findByIdAndUpdate(
+            { _id: _id },
+            { $set: { isDel: false } },
+            { new: true }
+          )
+          .then((result) => {
+            console.log(result);
+            res.status(200).json(result);
+          })
+          .catch((err) => {
+            res.status(400).json(err);
+          });
+      }
     });
+  } catch (error) {
+    res.status(400).json(error);
+  }
 };
 
-module.exports = { resgister, login, getalluser, deletuser };
+module.exports = { resgister, getUsers, login, softDel };
