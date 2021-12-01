@@ -1,14 +1,12 @@
 const mongoose = require("mongoose");
 
 const post = new mongoose.Schema({
-  desc: { type: String, required: true },
   img: { type: String },
-  isDelet: { type: Boolean, default: false },
-  isLik: { type: mongoose.Schema.Types.ObjectId, ref: "Like" },
+  desc: { type: String, require: true },
+  time: { type: Date },
   user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-  comments: { type: mongoose.Schema.Types.ObjectId, ref: "Comment" },
-},
-{timestamps: true}
-);
+  comment: { type: mongoose.Schema.Types.ObjectId, ref: "Comment" },
+  isDel: { type: Boolean, default: false },
+});
 
 module.exports = mongoose.model("Post", post);
