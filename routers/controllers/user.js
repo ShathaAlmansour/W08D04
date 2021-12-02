@@ -1,115 +1,101 @@
 const userModel = require("../../db/models/user");
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-
-const salt = Number(process.env.SALT);
-const secret = process.env.SECRET_KEY;
-
-const getUsers = (req, res) => {
-  userModel
-    .find({})
-    .then((result) => {
-      res.send(result);
-    })
-    .catch((err) => {
-      res.send(err);
-    });
-};
-
+var jwt = require("jsonwebtoken");
+// انشاء حساب جديد
 const resgister = async (req, res) => {
-  const { email, username, password } = req.body;
-
-  const savedEmail = email.toLowerCase();
-  const savedPassword = await bcrypt.hash(password, salt);
-  try {
+    const { username, email, password, role } = req.body;
+  
+    const SALT = Number(process.env.SALT);
+    const savedEmail = email.toLowerCase();
+    const hashedPassword = await bcrypt.hash(password, SALT);
     const newUser = new userModel({
-      email: savedEmail,
       username: username,
-      password: savedPassword,
+      email: savedEmail,
+      password: hashedPassword,
+      role,
     });
-    console.log(newUser);
+  
     newUser
       .save()
       .then((result) => {
-        res.json(result);
+        res.status(201).json(result);
       })
       .catch((err) => {
-        res.status(400).send(err);
+        res.status(400).json(err);
       });
-  } catch (error) {
-    res.status(400).send({ message: error });
-  }
-};
+  };
 
-const login = (req, res) => {
-  const { data, password } = req.body;
-  console.log(data);
-  userModel
-    .findOne({ $or: [{ email: data }, { username: data }] })
-    .then(async (result) => {
-      if (result) {
-        if (result.email == data || result.username == data) {
-          const savedPassword = await bcrypt.compare(password, result.password);
-          const payload = {
-            _id: result._id,
-            role: result.role,
-          };
-          console.log("payload", payload);
-          if (savedPassword) {
-            let token = jwt.sign(payload, secret);
-            res.status(200).json({ result, token });
+  // الدخول للحساب 
+  const login = (req, res) => {
+    const { username, email, password } = req.body;
+    const secret = process.env.secret;
+    const savedEmail = email?.toLowerCase();
+    userModel
+      .findOne({$or: [
+        {email:savedEmail},
+        {username}
+    ]}).then(async (result) => {
+        if (result) {
+          if (savedEmail === result.email || username === result.username) {
+            const payload = {
+              id: result._id,
+              role: result.role,
+            };
+            const options = {
+              expiresIn: 60 * 60,
+            };
+            const token = jwt.sign(payload, secret, options);
+            const unhashPassword = await bcrypt.compare(
+              password,
+              result.password
+            );
+            if (unhashPassword) {
+              res.status(200).json({result, token});
+            } else {
+              res.status(400).json("invalid email or password");
+            }
           } else {
-            res.status(400).json("Wrong email or password");
+            res.status(400).json("invalid email or password");
           }
         } else {
-          res.status(400).json("Wrong email or password");
+          res.status(400).json("email does not exist");
         }
-      } else {
-        res.status(404).json("Email not exist");
-      }
+      })
+      .catch((err) => {
+        res.status(400).json(err);
+      });
+  };
+// اظهار جميع اليوزرات
+  const getalluser = (req, res) => {
+    userModel
+    .find({})
+    .then((result) => {
+      res.status(200).json(result);
     })
     .catch((err) => {
-      res.send(err);
+      res.status(400).json(err);
     });
+  };
+// حذف اليوزر 
+  const deletuser = (req, res) => {
+    const { id } = req.params;
+    userModel
+      .findByIdAndUpdate(id, { $set: { isDeleted: true } })
+      .then((result) => {
+        if (result) {
+          res.status(200).json("user removed");
+        } else {
+          res.status(404).json("user does not exist");
+        }
+      })
+      .catch((err) => {
+        res.status(400).json(err);
+      });
 };
 
-// Toglle soft delete
-const softDel = (req, res) => {
-  const { _id } = req.params;
-  try {
-    userModel.findById({ _id: _id }).then((item) => {
-      if (item.isDel == false) {
-        userModel
-          .findByIdAndUpdate(
-            { _id: _id },
-            { $set: { isDel: true } },
-            { new: true }
-          )
-          .then((result) => {
-            res.status(200).json(result);
-          })
-          .catch((err) => {
-            res.status(400).json(err);
-          });
-      } else {
-        userModel
-          .findByIdAndUpdate(
-            { _id: _id },
-            { $set: { isDel: false } },
-            { new: true }
-          )
-          .then((result) => {
-            console.log(result);
-            res.status(200).json(result);
-          })
-          .catch((err) => {
-            res.status(400).json(err);
-          });
-      }
-    });
-  } catch (error) {
-    res.status(400).json(error);
-  }
-};
 
-module.exports = { resgister, getUsers, login, softDel };
+
+
+
+
+module.exports = { resgister, login, getalluser, deletuser };

@@ -1,32 +1,31 @@
-const roleModel = require("../../db/models/role");
-
-const newRole = (req, res) => {
+const rolemodel = require("../../db/models/role");
+// انشاء رول جديد اما ان يكون ادمن او يوزر 
+const newrolr = (req, res) => {
   const { role, permossion } = req.body;
 
-  const newRole = new roleModel({
+  const newrolr = new rolemodel({
     role,
     permossion,
   });
-  newRole
+  newrolr
     .save()
     .then((result) => {
       res.json(result);
     })
     .catch((err) => {
-      res.send(err);
+      res.status(err);
+    });
+};
+//  تظهتر الصلاحيات للادمن واليوزر
+const getrole = (req, res) => {
+  rolemodel
+    .find({})
+    .then((result) => {
+      res.json(result);
+    })
+    .catch((err) => {
+      res.json(err);
     });
 };
 
-
-const getRoles = (req, res) => {
-    roleModel
-    .find({})
-    .then((result) => {
-      res.send(result);
-    })
-    .catch((err) => {
-      res.send(err);
-    });
-}
-
-module.exports = {newRole, getRoles}
+module.exports = { newrolr, getrole };

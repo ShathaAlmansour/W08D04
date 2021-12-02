@@ -1,7 +1,7 @@
 const express = require("express");
 const commentRouter = express.Router();
-const authentication = require("../authentication");
-const authorization = require("../authorization");
+const authentication = require("./../middleware/authentication");
+const authorization = require("./../middleware/authorization");
 
 const {
   newComment,

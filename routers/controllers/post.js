@@ -1,12 +1,10 @@
-const post = require("../../db/models/post");
-const postModel = require("../../db/models/post");
-const commentModel = require("../../db/models/comment");
-// create new post
+const postmodel = require("../../db/models/post");
+// انشاء بوست جديد
 const newPost = (req, res) => {
   const { img, desc } = req.body;
   const { _id } = req.params;
   try {
-    const newPost = new postModel({
+    const newPost = new postmodel({
       img,
       desc,
       time: Date(),
@@ -25,15 +23,15 @@ const newPost = (req, res) => {
   }
 };
 
-// soft delete post
+// تعديل على البوست عن طريق سوفت ديليت
 const softDel = (req, res) => {
   const { _id } = req.params;
   try {
-    postModel.findOne({ _id: _id }).then((item) => {
+    postmodel.findOne({ _id: _id }).then((item) => {
       if (item.user == req.token._id) {
-        postModel.findById({ _id: _id }).then((item) => {
+        postmodel.findById({ _id: _id }).then((item) => {
           if (item.isDel == false) {
-            postModel
+            postmodel
               .findByIdAndUpdate(
                 { _id: _id },
                 { $set: { isDel: true } },
@@ -46,7 +44,7 @@ const softDel = (req, res) => {
                 res.status(400).json(err);
               });
           } else {
-            postModel
+            postmodel
               .findByIdAndUpdate(
                 { _id: _id },
                 { $set: { isDel: false } },
@@ -61,9 +59,9 @@ const softDel = (req, res) => {
           }
         });
       } else if (req.token.role == "61a734cd947e8eba47efbc68") {
-        postModel.findById({ _id: _id }).then((item) => {
+        postmodel.findById({ _id: _id }).then((item) => {
           if (item.isDel == false) {
-            postModel
+            postmodel
               .findByIdAndUpdate(
                 { _id: _id },
                 { $set: { isDel: true } },
@@ -76,7 +74,7 @@ const softDel = (req, res) => {
                 res.status(400).json(err);
               });
           } else {
-            postModel
+            postmodel
               .findByIdAndUpdate(
                 { _id: _id },
                 { $set: { isDel: false } },
@@ -99,15 +97,15 @@ const softDel = (req, res) => {
   }
 };
 
-// epdate post
+// التعديل على البوست
 const updatePost = (req, res) => {
   const { _id } = req.params;
   const { desc } = req.body;
   try {
-    postModel.findOne({ _id: _id }).then((item) => {
+    postmodel.findOne({ _id: _id }).then((item) => {
       // console.log("Update token ", req.token);
       if (item.user == req.token._id) {
-        postModel
+        postmodel
           .findOneAndUpdate(
             { _id: _id },
             { $set: { desc: desc, time: Date() } },
@@ -117,7 +115,7 @@ const updatePost = (req, res) => {
             res.status(200).json(result);
           });
       } else if (req.token.role == "61a734cd947e8eba47efbc68") {
-        postModel
+        postmodel
           .findOneAndUpdate(
             { _id: _id },
             { $set: { desc: desc, time: Date() } },
@@ -135,10 +133,10 @@ const updatePost = (req, res) => {
   }
 };
 
-// get post all
+// اظهار كل البوستات لليوزر
 const geAllPost = (req, res) => {
   try {
-    postModel.find({ isDel: false }).then((result) => {
+    postmodel.find({ isDel: false }).then((result) => {
       res.status(200).json(result);
     });
   } catch (error) {
@@ -146,11 +144,10 @@ const geAllPost = (req, res) => {
   }
 };
 
-// get post by id
 const getPost = (req, res) => {
   const { _id } = req.params;
   try {
-    postModel.findOne({ _id: _id }).then((result) => {
+    postmodel.findOne({ _id: _id }).then((result) => {
       if (result.isDel == false) {
         res.status(200).json(result);
       } else {
@@ -161,8 +158,7 @@ const getPost = (req, res) => {
     res.status(400).json(error);
   }
 };
-
-// Delete comment owner post
+// حذف الكومنت من البوست
 const deleteCommentOwner = (req, res) => {
   const { postId, commentId } = req.params;
   try {

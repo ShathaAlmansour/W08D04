@@ -1,23 +1,24 @@
 const express = require("express");
-
-require("dotenv").config();
-require("./db");
-
+const dotenv = require("dotenv");
+const cors = require("cors");
 const app = express();
+dotenv.config();
+const db = require("./db/index");
+
 app.use(express.json());
 
 const roleRouter = require("./routers/routes/role");
-app.use(roleRouter);
-const userRouter = require("./routers/routes/user");
-app.use(userRouter);
-const postRouter = require("./routers/routes/post");
-app.use(postRouter);
-const commentRouter = require("./routers/routes/comment");
-app.use(commentRouter);
+const userRoute = require("./routers/routes/user");
+const postsRouter = require("./routers/routes/post");
 const likeRouter = require("./routers/routes/like");
-app.use(likeRouter);
 
+app.use(roleRouter);
+app.use(userRoute);
+app.use(postsRouter);
+app.use(likeRouter);
 const PORT = process.env.PORT || 5000;
+app.use(cors());
+
 app.listen(PORT, () => {
-  console.log(`SERVER RUNNING ON ${PORT}`);
+  console.log(`server is running on port ${PORT}`);
 });

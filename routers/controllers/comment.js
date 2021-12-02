@@ -24,7 +24,6 @@ const newComment = (req, res) => {
     res.status(400).send(error);
   }
 };
-
 const deleteCommet = (req, res) => {
   const { _id } = req.params;
   try {
