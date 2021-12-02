@@ -3,26 +3,21 @@ const postModel = require("../../db/models/post");
 const likeModel = require("../../db/models/like");
 
 const newComment = (req, res) => {
-  const { desc } = req.body;
-  const { userId, postId } = req.params;
-  try {
-    const newComment = new commentModel({
+  
+  // const { userId, postId } = req.params;
+    const { desc,user, post } = req.body;
+    const newComment1 = new commentModel({
       desc,
-      time: Date(),
-      user: userId,
-      post: postId,
+      user,
+      post,
     });
-    newComment
-      .save()
-      .then((result) => {
+    newComment1.save().then((result) => {
         res.status(200).json(result);
       })
       .catch((err) => {
         res.status(400).send(err);
       });
-  } catch (error) {
-    res.status(400).send(error);
-  }
+   
 };
 const deleteCommet = (req, res) => {
   const { _id } = req.params;

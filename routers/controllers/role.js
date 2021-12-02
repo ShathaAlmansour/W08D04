@@ -1,5 +1,6 @@
 const rolemodel = require("../../db/models/role");
-// انشاء رول جديد اما ان يكون ادمن او يوزر 
+
+
 const newrolr = (req, res) => {
   const { role, permossion } = req.body;
 
@@ -16,7 +17,6 @@ const newrolr = (req, res) => {
       res.status(err);
     });
 };
-//  تظهتر الصلاحيات للادمن واليوزر
 const getrole = (req, res) => {
   rolemodel
     .find({})

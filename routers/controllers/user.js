@@ -1,7 +1,7 @@
 const userModel = require("../../db/models/user");
 const bcrypt = require("bcrypt");
 var jwt = require("jsonwebtoken");
-// انشاء حساب جديد
+
 const resgister = async (req, res) => {
     const { username, email, password, role } = req.body;
   
@@ -25,10 +25,10 @@ const resgister = async (req, res) => {
       });
   };
 
-  // الدخول للحساب 
-  const login = (req, res) => {
+  
+    const login = (req, res) => {
     const { username, email, password } = req.body;
-    const secret = process.env.secret;
+    const secret = process.env.SECRET_KEY;
     const savedEmail = email?.toLowerCase();
     userModel
       .findOne({$or: [
@@ -65,7 +65,7 @@ const resgister = async (req, res) => {
         res.status(400).json(err);
       });
   };
-// اظهار جميع اليوزرات
+
   const getalluser = (req, res) => {
     userModel
     .find({})
@@ -76,7 +76,7 @@ const resgister = async (req, res) => {
       res.status(400).json(err);
     });
   };
-// حذف اليوزر 
+
   const deletuser = (req, res) => {
     const { id } = req.params;
     userModel

@@ -11,11 +11,13 @@ const roleRouter = require("./routers/routes/role");
 const userRoute = require("./routers/routes/user");
 const postsRouter = require("./routers/routes/post");
 const likeRouter = require("./routers/routes/like");
+const commentRouter = require("./routers/routes/comment");
 
 app.use(roleRouter);
 app.use(userRoute);
 app.use(postsRouter);
 app.use(likeRouter);
+app.use(commentRouter)
 const PORT = process.env.PORT || 5000;
 app.use(cors());
 

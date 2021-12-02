@@ -18,7 +18,7 @@ postRouter.get("/allPost", authentication, authorization, geAllPost);
 
 postRouter.put("/updatePost/:_id", authentication, updatePost);
 
-postRouter.post("/newPost/:_id", authentication, newPost);
+postRouter.post("/newPost/:id", authentication, newPost);
 
 postRouter.put("/softDelete/:_id",authentication, softDel);
 
