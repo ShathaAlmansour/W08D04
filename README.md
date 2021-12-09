@@ -55,3 +55,11 @@ npm i bcrypt
 ```bash
 npm i jsonwebtoken
 ```
+
+## ER Daigarm
+![Untitled Diagram-Page-3 drawio](https://user-images.githubusercontent.com/92248175/145350041-f20cd68b-1433-4df3-85be-527e53205f95.png)
+
+## UML Daigram
+![Untitled Diagram-Page-4 drawio](https://user-images.githubusercontent.com/92248175/145350201-d78d167e-61a6-46e7-a4db-2032421d5755.png)
+
+
