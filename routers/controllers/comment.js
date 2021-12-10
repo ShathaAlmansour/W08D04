@@ -3,7 +3,6 @@ const postModel = require("../../db/models/post");
 const likeModel = require("../../db/models/like");
 
 const newComment = (req, res) => {
-  
   // const { userId, postId } = req.params;
     const { desc,user, post } = req.body;
     const newComment1 = new commentModel({
