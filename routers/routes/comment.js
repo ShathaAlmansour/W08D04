@@ -10,7 +10,7 @@ const {
   getComment,
   getPostWithComments,
 } = require("../controllers/comment");
-commentRouter.post("/newComment", newComment);
+commentRouter.post("/newComment/:userId/:postId", newComment);
 commentRouter.delete("/deletecomment/:_id", authentication, deleteCommet);
 commentRouter.put("/updatecomment/:_id", authentication, updateComment);
 commentRouter.get("/getComment", getComment);

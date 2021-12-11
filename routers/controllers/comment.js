@@ -3,13 +3,13 @@ const postModel = require("../../db/models/post");
 const likeModel = require("../../db/models/like");
 
 const newComment = (req, res) => {
-  const { desc, user, post } = req.body;
+  const { userId, postId } = req.params;
   try {
     const newComment = new commentModel({
       desc,
       time: Date(),
-      user: user,
-      post: post,
+      user: userId,
+      post: postId,
     });
     newComment
       .save()
@@ -23,7 +23,6 @@ const newComment = (req, res) => {
     res.status(400).send(error);
   }
 };
-
 const deleteCommet = (req, res) => {
   const { _id } = req.params;
   try {
@@ -66,7 +65,6 @@ const deleteCommet = (req, res) => {
     res.status(400).json(error);
   }
 };
-
 const updateComment = (req, res) => {
   const { _id } = req.params;
   const { desc } = req.body;
@@ -109,7 +107,6 @@ const updateComment = (req, res) => {
     res.status(404).json(error);
   }
 };
-
 const getComment = (req, res) => {
   const { _id } = req.params;
   try {
@@ -128,7 +125,6 @@ const getComment = (req, res) => {
     res.status(400).json(error);
   }
 };
-
 const getPostWithComments = (req, res) => {
   const { _id } = req.params;
   try {
