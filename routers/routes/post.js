@@ -9,19 +9,17 @@ const {
   updatePost,
   geAllPost,
   getPost,
-  deleteCommentOwner
+  deleteCommentOwner,
 } = require("../controllers/post");
-
 postRouter.get("/post/:_id", getPost);
-
-postRouter.get("/allPost", authentication, authorization, geAllPost);
-
+postRouter.get("/allPost", authentication, geAllPost);
 postRouter.put("/updatePost/:_id", authentication, updatePost);
-
-postRouter.post("/newPost/:id", authentication, newPost);
-
-postRouter.put("/softDelete/:_id",authentication, softDel);
-
-postRouter.delete("/ownerDelteComment/:postId/:commentId", authentication, deleteCommentOwner );
+postRouter.post("/newPost/:_id", authentication, newPost);
+postRouter.put("/softDelete/:_id", authentication, softDel);
+postRouter.delete(
+  "/ownerDelteComment/:postId/:commentId",
+  authentication,
+  deleteCommentOwner
+);
 
 module.exports = postRouter;

@@ -1,15 +1,17 @@
 const roleModel = require("../../db/models/role");
+
 const authorization = async (req, res, next) => {
   try {
-    const roleId = req.token.role;
-    const result = await roleModel.findById(roleId);
+    const roleID = req.token.role;
+    const result = await roleModel.findById(roleID);
     if (result.role === "admin") {
       next();
     } else {
-      return res.status(403).json({ message: "forbidden" });
+      res.status(403).json("forbidden");
     }
-  } catch (error) {
-    return res.status(404).json(error.message);
+  } catch (err) {
+    res.status(403).json(err);
   }
 };
+
 module.exports = authorization;

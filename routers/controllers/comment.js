@@ -3,21 +3,27 @@ const postModel = require("../../db/models/post");
 const likeModel = require("../../db/models/like");
 
 const newComment = (req, res) => {
-  // const { userId, postId } = req.params;
-    const { desc,user, post } = req.body;
-    const newComment1 = new commentModel({
+  const { desc, user, post } = req.body;
+  try {
+    const newComment = new commentModel({
       desc,
-      user,
-      post,
+      time: Date(),
+      user: user,
+      post: post,
     });
-    newComment1.save().then((result) => {
+    newComment
+      .save()
+      .then((result) => {
         res.status(200).json(result);
       })
       .catch((err) => {
         res.status(400).send(err);
       });
-   
+  } catch (error) {
+    res.status(400).send(error);
+  }
 };
+
 const deleteCommet = (req, res) => {
   const { _id } = req.params;
   try {
@@ -107,13 +113,17 @@ const updateComment = (req, res) => {
 const getComment = (req, res) => {
   const { _id } = req.params;
   try {
-    commentModel.findOne({ _id: _id }).then((result) => {
-      if (result) {
-        res.status(200).json(result);
-      } else {
-        res.status(404).send("Comment deleted");
-      }
-    });
+    commentModel
+      .find()
+      .populate("post")
+      .populate("user")
+      .then((result) => {
+        if (result) {
+          res.status(200).json(result);
+        } else {
+          res.status(404).send("Comment deleted");
+        }
+      });
   } catch (error) {
     res.status(400).json(error);
   }

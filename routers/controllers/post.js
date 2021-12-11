@@ -1,4 +1,5 @@
 const postmodel = require("../../db/models/post");
+
 const newPost = (req, res) => {
   const { img, desc } = req.body;
   const { _id } = req.params;
@@ -95,13 +96,11 @@ const softDel = (req, res) => {
   }
 };
 
-
 const updatePost = (req, res) => {
   const { _id } = req.params;
   const { desc } = req.body;
   try {
     postmodel.findOne({ _id: _id }).then((item) => {
-      // console.log("Update token ", req.token);
       if (item.user == req.token._id) {
         postmodel
           .findOneAndUpdate(
@@ -155,7 +154,6 @@ const getPost = (req, res) => {
     res.status(400).json(error);
   }
 };
-
 const deleteCommentOwner = (req, res) => {
   const { postId, commentId } = req.params;
   try {

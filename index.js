@@ -1,11 +1,7 @@
 const express = require("express");
-
 const dotenv = require("dotenv");
-
 const cors = require("cors");
-
 const app = express();
-
 dotenv.config();
 
 const db = require("./db/index");
@@ -16,9 +12,7 @@ const passport = require("passport");
 
 app.use(express.json());
 app.use(cors());
-
 require("./config/passport")(passport);
-
 app.use(
   session({
     secret: "secret",
@@ -39,6 +33,7 @@ app.use(function (req, res, next) {
 });
 
 app.use(express.urlencoded({ extended: false }));
+
 const roleRouter = require("./routers/routes/role");
 const userRoute = require("./routers/routes/user");
 const postsRouter = require("./routers/routes/post");
