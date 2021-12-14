@@ -1,14 +1,12 @@
 const postmodel = require("../../db/models/post");
-
 const newPost = (req, res) => {
-  const { img, desc } = req.body;
-  const { _id } = req.params;
+  const { img, desc, user } = req.body;
   try {
     const newPost = new postmodel({
       img,
       desc,
       time: Date(),
-      user: _id,
+      user,
     });
     newPost
       .save()
@@ -16,10 +14,10 @@ const newPost = (req, res) => {
         res.status(200).json(result);
       })
       .catch((err) => {
-        res.status(400).send(err);
+        res.status(200).send(err);
       });
   } catch (error) {
-    res.status(400).send(error);
+    res.status(200).send(error);
   }
 };
 

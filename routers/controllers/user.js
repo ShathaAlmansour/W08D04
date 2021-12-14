@@ -7,7 +7,7 @@ const OAuth2 = google.auth.OAuth2;
 const SECRET_KEY = process.env.SECRET_KEY;
 const passport = require("passport");
 const SECRET_RESET_KEY = process.env.SECRET_RESET_KEY;
-const CLIENT_URL = "http://localhost:5000";
+const CLIENT_URL = "http://localhost:3000"; 
 
 const resgister = (req, res) => {
   const { username, email, password, password2 } = req.body;
@@ -82,11 +82,11 @@ const resgister = (req, res) => {
         });
 
         const mailOptions = {
-          from: '"Auth Admin" <nodejsa@gmail.com>',
-          to: email,
-          subject: "Account Verification: NodeJS Auth ✔",
+          from: '"Auth Admin" <nodejsa@gmail.com>', // sender address
+          to: email, // list of receivers
+          subject: "Account Verification: NodeJS Auth ✔", // Subject line
           generateTextFromHTML: true,
-          html: output,
+          html: output, // html body
         };
 
         transporter.sendMail(mailOptions, (error, info) => {
@@ -108,16 +108,21 @@ const resgister = (req, res) => {
   }
 };
 
+
 const resetPassword = (req, res) => {
-  const { password, password2 } = req.body;
+  var { password, password2 } = req.body;
   const id = req.params.id;
 
   if (!password || !password2) {
-    res.json({ error: "Please enter all fields." });
-  } else if (password.length < 8) {
-    res.json({ error: "Password must be at least 8 characters." });
-  } else if (password != password2) {
-    res.json({ error: "Passwords do not match." });
+    res.json({error:"Please enter all fields."});
+  }
+
+  else if (password.length < 8) {
+    res.json({error:"Password must be at least 8 characters."});
+  }
+
+  else if (password != password2) {
+    res.json({error:"Passwords do not match."});
   } else {
     bcrypt.genSalt(10, (err, salt) => {
       bcrypt.hash(password, salt, (err, hash) => {
@@ -129,9 +134,9 @@ const resetPassword = (req, res) => {
           { password },
           function (err, result) {
             if (err) {
-              res.json({ error: "Error resetting password!" });
+              res.json({error:"Error resetting password!"});
             } else {
-              res.json({ error: "Password reset successfully!" });
+              res.json({error:"Password reset successfully!"});
             }
           }
         );
@@ -139,7 +144,6 @@ const resetPassword = (req, res) => {
     });
   }
 };
-
 const gotoReset = (req, res) => {
   const { token } = req.params;
 
@@ -151,11 +155,9 @@ const gotoReset = (req, res) => {
         const { _id } = decodedToken;
         userModel.findById(_id, (err, user) => {
           if (err) {
-            res.json({
-              error: "User with email ID does not exist! Please try again.",
-            });
+            res.json({ error: "User with email ID does not exist! Please try again." });
           } else {
-            res.json({ success: _id });
+            res.json({ success: _id});
           }
         });
       }
@@ -173,8 +175,8 @@ const login = (req, res, next) => {
   })(req, res, next);
 };
 
-const getalluser = (req, res) => {
-  userModel
+  const getalluser = (req, res) => {
+    userModel
     .find({})
     .then((result) => {
       res.status(200).json(result);
@@ -182,22 +184,22 @@ const getalluser = (req, res) => {
     .catch((err) => {
       res.status(400).json(err);
     });
-};
+  };
 
-const deletuser = (req, res) => {
-  const { id } = req.params;
-  userModel
-    .findByIdAndUpdate(id, { $set: { isDeleted: true } })
-    .then((result) => {
-      if (result) {
-        res.status(200).json("user removed");
-      } else {
-        res.status(404).json("user does not exist");
-      }
-    })
-    .catch((err) => {
-      res.status(400).json(err);
-    });
+  const deletuser = (req, res) => {
+    const { id } = req.params;
+    userModel
+      .findByIdAndUpdate(id, { $set: { isDeleted: true } })
+      .then((result) => {
+        if (result) {
+          res.status(200).json("user removed");
+        } else {
+          res.status(404).json("user does not exist");
+        }
+      })
+      .catch((err) => {
+        res.status(400).json(err);
+      });
 };
 const activate = (req, res) => {
   const token = req.params.token;
@@ -224,7 +226,7 @@ const activate = (req, res) => {
                 newUser
                   .save()
                   .then((user) => {
-                    res.json({ success: user });
+                    res.json({success: user});
                   })
                   .catch((err) => console.log(err));
               });
@@ -323,19 +325,13 @@ const forgotPassword = (req, res) => {
   }
 };
 
+
 const logout = (req, res) => {
   req.logout();
-  res.json({ logout: "You are logged out" });
+  res.json({logout: 'You are logged out'});
 };
 
-module.exports = {
-  resgister,
-  login,
-  getalluser,
-  deletuser,
-  resetPassword,
-  activate,
-  logout,
-  forgotPassword,
-  gotoReset,
-};
+
+
+
+module.exports = { resgister, login, getalluser, deletuser ,resetPassword,activate,logout,forgotPassword,gotoReset };

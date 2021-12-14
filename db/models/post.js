@@ -5,8 +5,11 @@ const post = new mongoose.Schema({
   desc: { type: String, require: true },
   time: { type: Date },
   user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-  comment: { type: mongoose.Schema.Types.ObjectId, ref: "Comment" },
+  comment: [{ type: mongoose.Schema.Types.ObjectId, ref: "Comment" }],
+  like: [{ type: mongoose.Schema.Types.ObjectId, ref: "Like" }],
   isDel: { type: Boolean, default: false },
+},{
+  timestamps:true,
 });
 
 module.exports = mongoose.model("Post", post);

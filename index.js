@@ -3,15 +3,21 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const app = express();
 dotenv.config();
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    methods: "GET,POST,PUT,DELETE",
+    credentials: true,
+  })
+);
 
 const db = require("./db/index");
 
 const flash = require("connect-flash");
 const session = require("express-session");
 const passport = require("passport");
-
 app.use(express.json());
-app.use(cors());
+
 require("./config/passport")(passport);
 app.use(
   session({
@@ -24,7 +30,6 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
-
 app.use(function (req, res, next) {
   res.locals.success_msg = req.flash("success_msg");
   res.locals.error_msg = req.flash("error_msg");
@@ -45,7 +50,6 @@ app.use(commentRouter);
 app.use(userRoute);
 app.use(postsRouter);
 app.use(likeRouter);
-
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {

@@ -1,8 +1,6 @@
 const express = require("express");
 const postRouter = express.Router();
-const authentication = require("./../middleware/authentication");
-const authorization = require("./../middleware/authorization");
-
+const { authentication } = require("../../config/checkAuth");
 const {
   newPost,
   softDel,
@@ -14,7 +12,7 @@ const {
 postRouter.get("/post/:_id", getPost);
 postRouter.get("/allPost", authentication, geAllPost);
 postRouter.put("/updatePost/:_id", authentication, updatePost);
-postRouter.post("/newPost/:_id", authentication, newPost);
+postRouter.post("/newPost", authentication, newPost);
 postRouter.put("/softDelete/:_id", authentication, softDel);
 postRouter.delete(
   "/ownerDelteComment/:postId/:commentId",

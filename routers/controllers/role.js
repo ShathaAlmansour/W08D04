@@ -1,5 +1,4 @@
 const rolemodel = require("../../db/models/role");
-
 const newrolr = (req, res) => {
   const { role, permossion } = req.body;
 

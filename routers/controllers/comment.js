@@ -1,130 +1,76 @@
 const commentModel = require("../../db/models/comment");
 const postModel = require("../../db/models/post");
 const likeModel = require("../../db/models/like");
-
 const newComment = (req, res) => {
-  const { userId, postId } = req.params;
-  try {
-    const newComment = new commentModel({
-      desc,
-      time: Date(),
-      user: userId,
-      post: postId,
+  const { id } = req.params;
+  const { desc, user } = req.body;
+  console.log(id);
+  const newComment = new commentModel({
+    desc,
+    user: user,
+    post: id,
+  });
+  newComment
+    .save()
+    .then((result) => {
+      postModel
+        .findByIdAndUpdate(id, { $push: { desc: result._id } })
+        .then((result) => {
+          console.log(result);
+        });
+      res.status(201).json(result);
+    })
+    .catch((err) => {
+      res.status(400).json(err);
     });
-    newComment
-      .save()
-      .then((result) => {
-        res.status(200).json(result);
-      })
-      .catch((err) => {
-        res.status(400).send(err);
-      });
-  } catch (error) {
-    res.status(400).send(error);
-  }
 };
+
+// لحذف التعليق
 const deleteCommet = (req, res) => {
-  const { _id } = req.params;
-  try {
-    commentModel.findOne({ _id: _id }).then((item) => {
-      if (item) {
-        if (item.user == req.token._id) {
-          commentModel
-            .findOneAndDelete({ _id: _id })
-            .then((result) => {
-              if (result) {
-                res.status(200).json(result);
-              } else {
-                res.status(404).send("Not found");
-              }
-            })
-            .catch((err) => {
-              res.status(400).json(err);
-            });
-        } else if (req.token.role == "61a734cd947e8eba47efbc68") {
-          commentModel
-            .findOneAndDelete({ _id: _id })
-            .then((result) => {
-              if (result) {
-                res.status(200).json(result);
-              } else {
-                res.status(404).send("Not found");
-              }
-            })
-            .catch((err) => {
-              res.status(400).json(err);
-            });
-        } else {
-          res.status(403).send("Forbidden");
-        }
+  const { id } = req.params;
+  commentModel
+    .findByIdAndDelete(id)
+    .then((result) => {
+      if (result) {
+        res.status(200).json("desc removed");
       } else {
-        res.status(404).send("Not found");
+        res.status(200).json("desc does not exist");
       }
+    })
+    .catch((err) => {
+      res.status(200).json(err);
     });
-  } catch (error) {
-    res.status(400).json(error);
-  }
 };
+
 const updateComment = (req, res) => {
-  const { _id } = req.params;
+  const { id } = req.params;
   const { desc } = req.body;
-  try {
-    commentModel.findOne({ _id: _id }).then((item) => {
-      console.log(req.token);
-      if (item.user == req.token._id) {
-        commentModel
-          .findOneAndUpdate(
-            { _id: _id },
-            { $set: { desc: desc, time: Date() } },
-            { new: true }
-          )
-          .then((result) => {
-            if (result) {
-              res.status(200).json(result);
-            } else {
-              res.status(404).send("Comment not found");
-            }
-          });
-      } else if (req.token.role == "61a734cd947e8eba47efbc68") {
-        commentModel
-          .findOneAndUpdate(
-            { _id: _id },
-            { $set: { desc: desc, time: Date() } },
-            { new: true }
-          )
-          .then((result) => {
-            if (result) {
-              res.status(200).json(result);
-            } else {
-              res.status(404).send("Comment not found");
-            }
-          });
+  commentModel
+    .findByIdAndUpdate(id, { $set: { desc: desc } })
+    .then((result) => {
+      if (result) {
+        res.status(200).json("desc updated");
       } else {
-        res.status(404).send("Forbidden");
+        res.status(404).json("desc does not exist");
       }
+    })
+    .catch((err) => {
+      res.status(400).json(err);
     });
-  } catch (error) {
-    res.status(404).json(error);
-  }
 };
+
 const getComment = (req, res) => {
-  const { _id } = req.params;
-  try {
-    commentModel
-      .find()
-      .populate("post")
-      .populate("user")
-      .then((result) => {
-        if (result) {
-          res.status(200).json(result);
-        } else {
-          res.status(404).send("Comment deleted");
-        }
-      });
-  } catch (error) {
-    res.status(400).json(error);
-  }
+  commentModel
+    .find({ post: req.body.post })
+    .populate("user")
+    .then((result) => {
+      res.send(result);
+    })
+    .catch((err) => {
+      res.send(err);
+    });
 };
+
 const getPostWithComments = (req, res) => {
   const { _id } = req.params;
   try {

@@ -12,8 +12,8 @@ const {
   gotoReset,
   forgotPassword,
 } = require("./../controllers/user");
-const authentication = require("./../middleware/authentication");
 const authorization = require("./../middleware/authorization");
+const { authentication } = require("../../config/checkAuth");
 
 userRoute.post("/resgister", resgister);
 userRoute.post("/login", login);
@@ -24,9 +24,15 @@ userRoute.get("/login/err", (req, res) =>
 );
 userRoute.get("/login/success", (req, res) => res.json({ success: "success" }));
 userRoute.get("/activate/:token", activate);
-userRoute.post("/forgot", forgotPassword);
-userRoute.post("/reset/:id", resetPassword);
+userRoute.post("/forgott", forgotPassword);
 userRoute.get("/forgot/:token", gotoReset);
 userRoute.get("/logout", logout);
 userRoute.post("/reset/:id", resetPassword);
+userRoute.get("/user", (req, res) => {
+  if (req.user) {
+    res.json({ user: req.user });
+  } else {
+    res.json("no user");
+  }
+});
 module.exports = userRoute;
